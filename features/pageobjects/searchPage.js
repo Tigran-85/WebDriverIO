@@ -1,13 +1,22 @@
-const { $ } = require("@wdio/globals");
+const { expect, $ } = require("@wdio/globals");
 
 class SearchPage {
+  atLeastOneExpectationMatched = false;
+
   async visit() {
     await browser.url("https://buy.am/");
+    await browser.maximizeWindow();
   }
 
   get allSection() {
     return $(
-      '//div[@id="searchCategorySelectionBox"]//span[contains(text(), "Բոլորը")]'
+      '//div[@id="searchCategorySelectionBox"]//span[contains(text(), "Բաժիններ")]'
+    );
+  }
+
+  get all() {
+    return $(
+      '//div[@id="searchCategorySelectionBox"]//ul/li[contains(text(), "Բոլորը")]'
     );
   }
 
@@ -15,12 +24,18 @@ class SearchPage {
     return $('//form[@class="main-search--form"]//input[2]');
   }
 
-  get message() {
+  get successMessage() {
     return $('//h1[@class="search--headline"]');
   }
 
-  get clickFirstItem() {
-    return $('//div[@class="listing"]/div[1]').click();
+  get failMessage() {
+    return $('//div[@class="alert--content"]');
+  }
+
+  get firstItem() {
+    return $(
+      '//div[@class="listing--container"]//div[@class="product--box box--minimal"][1]//a[@class="product--title"]'
+    );
   }
 
   get productTitle() {
@@ -39,62 +54,94 @@ class SearchPage {
     return $('//div[@class="product--description im-collapse-content"]');
   }
 
+  get shortProductsShow() {
+    return $(
+      '//ul[@class="results--list"]/li[@class="entry--all-results block-group result--item"]/a'
+    );
+  }
+
+  get productResultsNumber() {
+    return $(
+      '//ul[@class="results--list"]/li[@class="entry--all-results block-group result--item"]/span'
+    );
+  }
+
+  async checkSearchPlaceHolder(value) {
+    const placeholder = await this.enterName.getAttribute('placeholder');
+
+    expect(placeholder).toEqual(value);
+  }
+
+  async getSearchInputValue() {
+    const text = await this.enterName.getValue();
+
+    expect(text.length).toEqual(30);
+  }
+
+  async checkInputValueDelete() {
+    const text = await this.enterName.clearValue();
+
+    expect(text).toBe(null);
+  }
+
+  async checkProductResultNumber(message) {
+    const text = await this.productResultsNumber.getText();
+
+    const words = text.split(" ");
+
+    expect(isNaN(words[0])).toBe(false);
+    expect(words[1]).toEqual(message);
+  }
+
+  async chooseAllSection() {
+    await this.allSection.click();
+    await this.all.click();
+  }
+
   async search(value1) {
     await this.enterName.setValue(value1);
-    await browser.keys("Enter");
   }
 
   async getSuccessMessage(message) {
-    const text = await this.message.getText();
-    expect(text).toContain(message);
+    const text = await this.successMessage.getText();
+    await expect(text).toContain(message);
   }
 
+  async getFailedMessage(message) {
+    const text = await this.failMessage.getText();
+    await expect(text).toContain(message);
+  }
+
+  // async clickFirstItem() {
+  //   (await this.firstItem).click();
+  // }
+
   async checkFirstElement(value1, value2) {
-    let atLeastOneExpectationMatched = false;
     value1 = value1.toLocaleLowerCase();
     value2 = value2.toLocaleLowerCase();
+
+    let atLeastOneExpectationMatched = false;
+
+    const text = (await this.firstItem.getText()).toLocaleLowerCase();
 
     if (value1.includes(" ")) {
       const words1 = value1.split(" ");
 
-      for (let i = 0; i < words1.length; i++) {
-        expect(await this.checkFirstElement(words1[i], value2)).toBe(true);
+      if (text.includes(words1[0]) || text.includes(words1[1])) {
+        atLeastOneExpectationMatched = true;
+      }
+    } else if (value1.includes("-")) {
+      const words1 = value1.split("-");
+      if (text.includes(words1[0]) || text.includes(words1[1])) {
+        atLeastOneExpectationMatched = true;
+      }
+    } else {
+      if (text.includes(value1) || text.includes(value2)) {
+        atLeastOneExpectationMatched = true;
       }
     }
 
-    async function checkElementExisting(el) {
-      if (el) {
-        const text = await el.getText();
-        if (
-          text.toLocaleLowerCase().includes(value1) ||
-          text.toLocaleLowerCase().includes(value2)
-        ) {
-          atLeastOneExpectationMatched = true;
-        }
-      }
-    }
-
-    await checkElementExisting(await this.productTitle);
-
-    try {
-      await checkElementExisting(await this.productBrand);
-    } catch (error) {
-      console.log(error);
-    }
-
-    try {
-      await checkElementExisting(await this.productColor);
-    } catch (error) {
-      console.log(error);
-    }
-
-    try {
-      await checkElementExisting(await this.productDescription);
-    } catch (error) {
-      console.log(error);
-    }
-
-    expect(atLeastOneExpectationMatched).toBe(true);
+    await expect(atLeastOneExpectationMatched).toBe(true);
   }
 }
 
