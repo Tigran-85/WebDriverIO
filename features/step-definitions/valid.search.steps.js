@@ -5,8 +5,8 @@ Given(/^Open web page$/, async () => {
   await searchPage.visit();
 });
 
-When(/^Choose section all$/, async () => {
-  await searchPage.chooseAllSection();
+When(/^Choose section (.*)$/, async (section) => {
+  await searchPage.chooseSection(section);
 });
 
 When(/^Type Name into search field (.*)$/, async (value1) => {

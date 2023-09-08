@@ -20,6 +20,30 @@ class SearchPage {
     );
   }
 
+  get supermarket() {
+    return $(
+      '//div[@id="searchCategorySelectionBox"]//ul/li/span[contains(text(), "Սուպերմարկետ")]'
+    );
+  }
+
+  get restaurant() {
+    return $(
+      '//div[@id="searchCategorySelectionBox"]//ul/li/span[contains(text(), "Ռեստորաններ")]'
+    );
+  }
+
+  get shops() {
+    return $(
+      '//div[@id="searchCategorySelectionBox"]//ul/li/span[contains(text(), "Խանութներ")]'
+    );
+  }
+
+  get pharmacy() {
+    return $(
+      '//div[@id="searchCategorySelectionBox"]//ul/li/span[contains(text(), "Դեղատուն")]'
+    );
+  }
+
   get enterName() {
     return $('//form[@class="main-search--form"]//input[2]');
   }
@@ -67,7 +91,7 @@ class SearchPage {
   }
 
   async checkSearchPlaceHolder(value) {
-    const placeholder = await this.enterName.getAttribute('placeholder');
+    const placeholder = await this.enterName.getAttribute("placeholder");
 
     expect(placeholder).toEqual(value);
   }
@@ -93,9 +117,9 @@ class SearchPage {
     expect(words[1]).toEqual(message);
   }
 
-  async chooseAllSection() {
+  async chooseSection(section) {
     await this.allSection.click();
-    await this.all.click();
+    await this[section].click();
   }
 
   async search(value1) {
@@ -126,8 +150,11 @@ class SearchPage {
 
     if (value1.includes(" ")) {
       const words1 = value1.split(" ");
-
-      if (text.includes(words1[0]) || text.includes(words1[1])) {
+console.log(text, value2);
+      if (
+        text.includes(words1[0]) || text.includes(words1[1]) ||
+        text.includes(value2)
+        ) {
         atLeastOneExpectationMatched = true;
       }
     } else if (value1.includes("-")) {
