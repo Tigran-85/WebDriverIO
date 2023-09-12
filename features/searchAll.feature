@@ -1,9 +1,9 @@
 Feature: Search functionality with "ԲՈԼՈՐԸ" option
-    
-    Background: 
+
+    Background:
         Given Open web page
         And Choose section all
-
+    @smoke
     Scenario Outline:  Check Search functionality with valid credendials
         When Type Name into search field <value1>
         When Press enter
@@ -11,17 +11,16 @@ Feature: Search functionality with "ԲՈԼՈՐԸ" option
         Then Products with the Apple name should be found in title <value1> <value2>
 
         Examples:
-            | value1         | value2 | message                                               |
-            | Apple          | Խնձոր  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | Red Apple      | Խնձոր  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | Red Apple      | կարմիր | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | APPLE          | ԽՆՁՈՐ  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | apple          | խնձոր  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | խնձոր          | apple  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | Խնձ            | apple  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | JUICE-Necklace | վզնոց  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-            | sal            | սալ    | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
-  
+            | value1         | value2       | message                                               |
+            | Apple          | Խնձոր        | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+            | Red Apple      | կարմիր-Խնձոր | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+            | APPLE          | ԽՆՁՈՐ        | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+            | apple          | խնձոր        | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+            | խնձոր          | apple        | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+            | Խնձ            | apple        | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+            | JUICE-Necklace | հյութ-վզնոց  | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+            | sal            | սալ-խոզաճարպ | Ձեր որոնման արդյունքում գտնվել են հետևյալ ապրանքները: |
+
     Scenario Outline:  Check Search functionality with invalid credendials
         When Type Name into search field <value>
         When Press enter
@@ -32,7 +31,7 @@ Feature: Search functionality with "ԲՈԼՈՐԸ" option
             | a       | Մուտքագրված բառը շատ կարճ է որոնման համար  |
             | gffffff | Ձեր որոնմանը համապատասխանող ապրանքներ չկան |
             |         | Մուտքագրված բառը շատ կարճ է որոնման համար  |
-
+    
     Scenario Outline: Check if clicking on "Ցուցադրել բոլոր արդյունքները" opens all results found
         When Type Name into search field <value1>
         When Click on `Ցուցադրել բոլոր արդյունքները` on the results dropdown
@@ -49,7 +48,7 @@ Feature: Search functionality with "ԲՈԼՈՐԸ" option
         Examples:
             | value | message      |
             | Կաթ   | Արդյունքները |
-     
+
     Scenario Outline: Check search field allows maximum 30 characters
         When Type Name into search field <value>
         Then Check the length of input text
@@ -64,8 +63,8 @@ Feature: Search functionality with "ԲՈԼՈՐԸ" option
         Examples:
             | value     |
             | Որոնել․․․ |
-    
-    Scenario Outline: Check search field allows maximum 30 characters
+
+    Scenario Outline: Check that search word can be deleted
         When Type Name into search field <value>
         Then The Search Input should be deleted
 

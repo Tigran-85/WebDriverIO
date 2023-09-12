@@ -2,7 +2,7 @@ const { Given, When, Then } = require("@wdio/cucumber-framework");
 const searchPage = require("../pageobjects/searchPage");
 
 Given(/^Open web page$/, async () => {
-  await searchPage.visit();
+  await searchPage.open();
 });
 
 When(/^Choose section (.*)$/, async (section) => {
@@ -24,10 +24,6 @@ Then(
   }
 );
 
-// When(/^Click on first item apears on the screen$/, async () => {
-//   await searchPage.clickFirstItem();
-// });
-
 Then(
   /^Products with the Apple name should be found in title (.*) (.*)$/,
   async (value1, value2) => {
@@ -40,7 +36,7 @@ Then(/^Products should be found with failed message (.*)$/, async (message) => {
 });
 
 When(/^Click on `Ցուցադրել բոլոր արդյունքները` on the results dropdown$/, async () => {
-	await searchPage.shortProductsShow.click()
+	await searchPage.shortProductsShow.click();
 });
 
 

@@ -1,10 +1,10 @@
 const { expect, $ } = require("@wdio/globals");
+const Page = require("./page");
 
-class SearchPage {
-  atLeastOneExpectationMatched = false;
+class SearchPage extends Page {
 
-  async visit() {
-    await browser.url("https://buy.am/");
+  async open() {
+    await super.open();
     await browser.maximizeWindow();
   }
 
@@ -66,18 +66,6 @@ class SearchPage {
     return $('//h1[@class="product--title"]');
   }
 
-  get productBrand() {
-    return $('//span[contains(text(), "Բրենդ")]/following-sibling::a');
-  }
-
-  get productColor() {
-    return $('//span[contains(text(), "Գույն")]/following-sibling::a');
-  }
-
-  get productDescription() {
-    return $('//div[@class="product--description im-collapse-content"]');
-  }
-
   get shortProductsShow() {
     return $(
       '//ul[@class="results--list"]/li[@class="entry--all-results block-group result--item"]/a'
@@ -136,37 +124,27 @@ class SearchPage {
     await expect(text).toContain(message);
   }
 
-  // async clickFirstItem() {
-  //   (await this.firstItem).click();
-  // }
 
   async checkFirstElement(value1, value2) {
-    value1 = value1.toLocaleLowerCase();
-    value2 = value2.toLocaleLowerCase();
-
-    let atLeastOneExpectationMatched = false;
-
+    const lowerValue1 = value1.toLocaleLowerCase();
+    const lowerValue2 = value2.toLocaleLowerCase();
     const text = (await this.firstItem.getText()).toLocaleLowerCase();
 
-    if (value1.includes(" ")) {
-      const words1 = value1.split(" ");
-console.log(text, value2);
-      if (
-        text.includes(words1[0]) || text.includes(words1[1]) ||
-        text.includes(value2)
-        ) {
-        atLeastOneExpectationMatched = true;
+    const contains = (str) => text.includes(str);
+
+    const checkValue = (str) => {
+      if (str.includes(" ")) {
+        const words = str.split(" ");
+        return words.some(contains);
+      } else if (str.includes("-")) {
+        const words = str.split("-");
+        return words.some(contains);
       }
-    } else if (value1.includes("-")) {
-      const words1 = value1.split("-");
-      if (text.includes(words1[0]) || text.includes(words1[1])) {
-        atLeastOneExpectationMatched = true;
-      }
-    } else {
-      if (text.includes(value1) || text.includes(value2)) {
-        atLeastOneExpectationMatched = true;
-      }
-    }
+      return contains(str);
+    };
+
+    const atLeastOneExpectationMatched =
+      checkValue(lowerValue1) || checkValue(lowerValue2);
 
     await expect(atLeastOneExpectationMatched).toBe(true);
   }
